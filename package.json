@@ -1,0 +1,15 @@
+{
+  "name": "androidmanifest",
+  "version": "1.0.0",
+  "description": "Makes editing AndroidManifest.xml from JavaScript much easier",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Keyvan Fatehi <keyvanfatehi@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^3.10.1",
+    "pixl-xml": "^1.0.4"
+  }
+}
