@@ -1,6 +1,6 @@
 {
   "name": "androidmanifest",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Makes editing AndroidManifest.xml from JavaScript much easier",
   "main": "index.js",
   "scripts": {

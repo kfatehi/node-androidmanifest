@@ -63,6 +63,13 @@ AndroidManifest.prototype.service = function(name) {
   });
 }
 
+AndroidManifest.prototype.activity = function(name) {
+  var ident = { _Attribs: { "android:name": name } };
+  return this.findOrCreateChild(this.data['application'], 'activity', ident, function(node) {
+    return node._Attribs && node._Attribs['android:name'] === name
+  });
+}
+
 
 var ChildNode = function(node) {
   this.node = node;
