@@ -70,7 +70,7 @@ var ChildNode = function(node) {
 
 ChildNode.prototype.intentFilter = function(name) {
   return this.node['intent-filter'] = {
-    action: { _Attribs: { 'andaroid:name': name } }
+    action: { _Attribs: { 'android:name': name } }
   }
 }
 
