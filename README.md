@@ -9,26 +9,38 @@ The following implements the AndroidManifest.xml changes described in [this blog
 ```
 #!/usr/bin/env node
 
+var _ = require('lodash');
+
+var root = __dirname+'/../..';
 var AndroidManifest = require('androidmanifest');
+var manifestFilePath = root+'/platforms/android/AndroidManifest.xml'
+var manifest = new AndroidManifest().readFile(manifestFilePath)
 
-var path = __dirname+'/../../platforms/android/AndroidManifest.xml'
-var manifest = new AndroidManifest()
-
-manifest
-.readFile(path)
-.subclass('.AppContext')
+manifest.subclass('.AppContext')
 .usesPermission('android.permission.RECEIVE_BOOT_COMPLETED')
 .usesPermission('android.permission.WAKE_LOCK')
 .usesPermission('android.permission.GET_TASKS')
 
-manifest.receiver('.BootReceiver').intentFilter('android.intent.action.BOOT_COMPLETED')
+manifest.receiver('.BootReceiver')
+.empty()
+.append('<intent-filter>')
+.find('intent-filter')
+.append('<action>')
+.find('action')
+.attr('android:name', 'android.intent.action.BOOT_COMPLETED')
 
 manifest.service('.KioskService').attr('android:exported', 'false')
 
-manifest.activity('MainActivity').intentFilter('android.intent.action.MAIN')
-.setCategory('category', 'android.intent.category.DEFAULT')
-.setCategory('category', 'android.intent.category.LAUNCHER')
-.setCategory('category', 'android.intent.category.HOME')
+var mainActivity = manifest.activity('MainActivity')
+.attr('android:screenOrientation', 'sensorLandscape')
 
-manifest.writeFile(path);
+var mainIntentFilter = mainActivity.find('> intent-filter');
+
+_.each(['DEFAULT', 'LAUNCHER', 'HOME'], function(name) {
+  var sel = 'application > activity > intent-filter';
+  var name = 'android.intent.category.'+name;
+  manifest.findOrCreateByAndroidName(mainIntentFilter, 'category', name)
+});
+
+manifest.writeFile(manifestFilePath);
 ```

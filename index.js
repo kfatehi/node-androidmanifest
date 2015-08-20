@@ -1,18 +1,13 @@
 module.exports = AndroidManifest;
 var _ = require('lodash');
 var fs = require('fs');
-var XML = require('pixl-xml');
-var utils = require('./utils');
-var ChildNode = require('./child-node');
+var pd = require('pretty-data2').pd;
+var cheerio = require('cheerio');
 
 function AndroidManifest() { this.data = {} }
 
 AndroidManifest.prototype.toXML = function() {
-  return XML.stringify(this.data, 'manifest');
-}
-
-AndroidManifest.prototype.toJSON = function() {
-  return JSON.stringify(this.data, null, 2);
+  return pd.xml(this.$.xml());
 }
 
 AndroidManifest.prototype.writeFile = function(path) {
@@ -23,29 +18,46 @@ AndroidManifest.prototype.writeFile = function(path) {
 
 AndroidManifest.prototype.readFile = function(path) {
   var xml = fs.readFileSync(path).toString();
-  this.data = XML.parse(xml, { preserveAttributes: true })
+  this.$ = cheerio.load(xml, { xmlMode: true });
   return this;
 }
 
 AndroidManifest.prototype.usesPermission = function(name) {
-  utils.pushUniqueElement(this.data, 'uses-permission', { 'android:name': name });
+  var perms = this.$('uses-permission')
+  var dupe = _.find(perms, { attribs: { 'android:name': name } });
+  if (!dupe) {
+    var elem = this.$('<uses-permission>').attr('android:name', name);
+    this.$('manifest').append(elem);
+  }
   return this;
 }
 
 AndroidManifest.prototype.subclass = function(name) {
-  var appNode = this.data['application'];
-  appNode._Attribs['android:name'] = name;
+  this.$('application').attr('android:name', name);
   return this;
 }
 
+AndroidManifest.prototype.findOrCreateByAndroidName = function(parent, tag, name) {
+  var manifest = this;
+  var $ = manifest.$;
+  var nodes = $(parent).find(' > '+tag);
+  var dupe = _.find(nodes, { attribs: { 'android:name': name } });
+  if (dupe) return $(dupe);
+  else {
+    var elem = $('<'+tag+'>').attr('android:name', name);
+    $(parent).append(elem);
+    return $(elem);
+  }
+}
+
 AndroidManifest.prototype.receiver = function(name) {
-  return new ChildNode(utils.findOrCreateByAndroidName(this.data['application'], 'receiver', name))
+  return this.findOrCreateByAndroidName('application', 'receiver', name);
 }
 
 AndroidManifest.prototype.service = function(name) {
-  return new ChildNode(utils.findOrCreateByAndroidName(this.data['application'], 'service', name))
+  return this.findOrCreateByAndroidName('application', 'service', name);
 }
 
 AndroidManifest.prototype.activity = function(name) {
-  return new ChildNode(utils.findOrCreateByAndroidName(this.data['application'], 'activity', name))
+  return this.findOrCreateByAndroidName('application', 'activity', name);
 }
