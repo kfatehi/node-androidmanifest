@@ -39,22 +39,13 @@ AndroidManifest.prototype.subclass = function(name) {
 }
 
 AndroidManifest.prototype.receiver = function(name) {
-  var ident = { _Attribs: { "android:name": name } };
-  return new ChildNode(utils.findOrCreate(this.data['application'], 'receiver', ident, function(node) {
-    return node._Attribs && node._Attribs['android:name'] === name
-  }))
+  return new ChildNode(utils.findOrCreateByAndroidName(this.data['application'], 'receiver', name))
 }
 
 AndroidManifest.prototype.service = function(name) {
-  var ident = { _Attribs: { "android:name": name } };
-  return new ChildNode(utils.findOrCreate(this.data['application'], 'service', ident, function(node) {
-    return node._Attribs && node._Attribs['android:name'] === name
-  }))
+  return new ChildNode(utils.findOrCreateByAndroidName(this.data['application'], 'service', name))
 }
 
 AndroidManifest.prototype.activity = function(name) {
-  var ident = { _Attribs: { "android:name": name } };
-  return new ChildNode(utils.findOrCreate(this.data['application'], 'activity', ident, function(node) {
-    return node._Attribs && node._Attribs['android:name'] === name
-  }))
+  return new ChildNode(utils.findOrCreateByAndroidName(this.data['application'], 'activity', name))
 }

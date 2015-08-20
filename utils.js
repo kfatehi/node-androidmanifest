@@ -5,7 +5,9 @@ module.exports = {
     var obj = { _Attribs: obj }
     var arr = owner[key] || [];
     if (_.isArray(arr)) {
-      if (!_.find(arr, obj)) arr.push(obj);
+      var existing = _.find(arr, obj);
+      if (existing) return existing;
+      arr.push(obj);
     } else if(_.isObject(arr)) {
       var arr = [arr];
       arr.push(obj);
@@ -27,5 +29,12 @@ module.exports = {
       parentNode[key] = ident;
       return parentNode[key];
     }
+  },
+  findOrCreateByAndroidName: function(parentNode, key, name, filter) {
+    var ident = { _Attribs: { "android:name": name } };
+    return this.findOrCreate(parentNode, key, ident, function(node) {
+      if (filter) return filter(node);
+      return node._Attribs && node._Attribs['android:name'] === name
+    })
   }
 }
