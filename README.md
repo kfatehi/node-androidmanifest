@@ -25,5 +25,10 @@ manifest.receiver('.BootReceiver').intentFilter('android.intent.action.BOOT_COMP
 
 manifest.service('.KioskService').attr('android:exported', 'false')
 
+manifest.activity('MainActivity').intentFilter('android.intent.action.MAIN')
+.setCategory('category', 'android.intent.category.DEFAULT')
+.setCategory('category', 'android.intent.category.LAUNCHER')
+.setCategory('category', 'android.intent.category.HOME')
+
 manifest.writeFile(path);
 ```
